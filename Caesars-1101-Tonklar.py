@@ -155,7 +155,11 @@ class PlaintextMessage(Message):
         Hint: consider using the parent class constructor so less
         code is repeated
         '''
-        pass  # delete this line and replace with your code here
+        self.message_text = text
+        self.valid_words = load_words(WORDLIST_FILENAME)
+        self.shift = shift
+        self.encrypted_dict = Message.build_shift_dict(shift)
+        self.message_text_encrypted = Message.apply_shift(shift)
 
     def get_shift(self):
         '''
@@ -163,7 +167,7 @@ class PlaintextMessage(Message):
 
         Returns: self.shift
         '''
-        pass  # delete this line and replace with your code her
+        return self.shift
 
     def get_encrypting_dict(self):
         '''
@@ -171,7 +175,7 @@ class PlaintextMessage(Message):
 
         Returns: a COPY of self.encrypting_dict
         '''
-        pass  # delete this line and replace with your code here
+        return self.encrypted_dict.copy()
 
     def get_message_text_encrypted(self):
         '''
@@ -238,6 +242,12 @@ test1 = Message("hello w")
 print(test1.build_shift_dict(2))
 print("--------|-------------\n--------v-------------\n")
 print(test1.apply_shift(2))
+print("---------------------------------------\n")
+
+test2 = Message("Just In Case")
+print(test2.build_shift_dict(2))
+print("--------|-------------\n--------v-------------\n")
+print(test2.apply_shift(2))
 print("---------------------------------------\n")
 
 
