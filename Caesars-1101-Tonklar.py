@@ -36,9 +36,9 @@ def is_word(word_list, word):
     Returns: True if word is in word_list, False otherwise
 
     Example:
-    >>> is_word(word_list, 'bat') returns
+    # >>> is_word(word_list, 'bat') returns
     True
-    >>> is_word(word_list, 'asdf') returns
+    # >>> is_word(word_list, 'asdf') returns
     False
     '''
     word = word.lower()
@@ -131,7 +131,7 @@ class Message(object):
 
         self.shifted_word = ""
         for letter in str(self.message_text):
-            self.shifted_word += str(self.mapped_dictionary.get(str(letter))) if letter.isalpha() else str(letter)
+            self.shifted_word += str(self.build_shift_dict(shift).get(str(letter))) if letter.isalpha() else str(letter)
 
         return self.shifted_word
 
@@ -158,8 +158,8 @@ class PlaintextMessage(Message):
         self.message_text = text
         self.valid_words = load_words(WORDLIST_FILENAME)
         self.shift = shift
-        self.encrypted_dict = Message.build_shift_dict(shift)
-        self.message_text_encrypted = Message.apply_shift(shift)
+        self.encrypted_dict = self.build_shift_dict(shift)
+        self.message_text_encrypted = self.apply_shift(shift)
 
     def get_shift(self):
         '''
@@ -183,7 +183,7 @@ class PlaintextMessage(Message):
 
         Returns: self.message_text_encrypted
         '''
-        pass  # delete this line and replace with your code here
+        return self.message_text_encrypted
 
     def change_shift(self, shift):
         '''
@@ -196,7 +196,12 @@ class PlaintextMessage(Message):
 
         Returns: nothing
         '''
-        pass  # delete this line and replace with your code here
+
+        self.encrypted_dict = self.build_shift_dict(self.shift - shift)
+        self.message_text_encrypted = self.apply_shift(self.shift - shift)
+        self.shift = shift
+
+
 
 
 class CiphertextMessage(Message):
@@ -210,7 +215,8 @@ class CiphertextMessage(Message):
             self.message_text (string, determined by input text)
             self.valid_words (list, determined using helper function load_words)
         '''
-        pass  # delete this line and replace with your code here
+        self.message_text = text
+        self.valid_words = load_words(WORDLIST_FILENAME)
 
     def decrypt_message(self):
         '''
@@ -228,8 +234,19 @@ class CiphertextMessage(Message):
         Returns: a tuple of the best shift value used to decrypt the message
         and the decrypted message text using that shift value
         '''
-        pass  # delete this line and replace with your code here
 
+        shift_value = 0
+        match_word = 0
+        max_match_word = 0
+        for shift in range(26):
+            for word in list(self.apply_shift(shift).split(" ")):
+                if is_word(self.valid_words, word):
+                    match_word += 1
+            if match_word > max_match_word :
+                shift_value = shift
+                max_match_word = match_word
+
+        return (shift_value, self.apply_shift(shift_value))
 
 if __name__ == '__main__':
     s = get_story_string()
@@ -245,6 +262,12 @@ print(test1.apply_shift(2))
 print("---------------------------------------\n")
 
 test2 = Message("Just In Case")
+print(test2.build_shift_dict(2))
+print("--------|-------------\n--------v-------------\n")
+print(test2.apply_shift(2))
+print("---------------------------------------\n")
+
+test2 = Message("Hello World!")
 print(test2.build_shift_dict(2))
 print("--------|-------------\n--------v-------------\n")
 print(test2.apply_shift(2))
